@@ -1,11 +1,11 @@
-local tprint = Reload('related_files.util').tprint
-local rf = Reload('related_files.related_files')
-local rf_info = Reload('related_files.info')
-local path = Reload('related_files.util.path')
+local tprint = require('related_files.util').tprint
+local rf = require('related_files.related_files')
+local rf_info = require('related_files.info')
+local path = require('related_files.util.path')
 
 local M = {}
 
-M.pargen_from_expression = Reload('related_files.expression').pargen_from_expression
+M.pargen_from_expression = require('related_files.expression').pargen_from_expression
 
 local function create_and_open_one_of(filenames)
     if #filenames == 1 then
@@ -131,7 +131,7 @@ end
 
 local function set_commands(opts)
     -- rf.info_log
-    local cmd = string.format("command! RFInfo :lua print(Reload('related_files.related_files').info_log_buf(%d).to_string())", opts.nr_keymaps)
+    local cmd = string.format("command! RFInfo :lua print(require('related_files.related_files').info_log_buf(%d).to_string())", opts.nr_keymaps)
     vim.cmd(cmd)
 end
 

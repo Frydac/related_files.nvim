@@ -33,15 +33,26 @@ function M.tprint (tbl, name)
 end
 
 function M.print_warning(msg)
-    local rf_msg = "RelatedFiles warning:\n"..msg
     local ok, notify = pcall(require, 'notify')
     if ok then
-        notify.notify(rf_msg, "warning")
+        local title = "RelatedFiles"
+        notify.notify(msg, "warning", {title = title})
     else
+        local rf_msg = "RelatedFiles warning:\n"..msg
         vim.api.nvim_echo({{rf_msg, "WarningMsg"}}, true, {})
     end
 end
 
+function M.print_error(msg)
+    local ok, notify = pcall(require, 'notify')
+    if ok then
+        local title = "RelatedFiles"
+        notify.notify(msg, "error", {title = title})
+    else
+        local rf_msg = "RelatedFiles error:\n"..msg
+        vim.api.nvim_echo({{rf_msg, "ErrorMsg"}}, true, {})
+    end
+end
 
 -- TODO: remove, in Path now
 function M.file_exists(filename)

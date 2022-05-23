@@ -34,9 +34,10 @@ end
 
 function M.print_warning(msg)
     local ok, notify = pcall(require, 'notify')
+    -- local ok = nil
     if ok then
         local title = "RelatedFiles"
-        notify.notify(msg, "warning", {title = title})
+        notify.notify(msg, vim.log.levels.WARN, {title = title})
     else
         local rf_msg = "RelatedFiles warning:\n"..msg
         vim.api.nvim_echo({{rf_msg, "WarningMsg"}}, true, {})
@@ -45,14 +46,17 @@ end
 
 function M.print_error(msg)
     local ok, notify = pcall(require, 'notify')
+    -- local ok = nil
     if ok then
         local title = "RelatedFiles"
-        notify.notify(msg, "error", {title = title})
+        notify.notify(msg, vim.log.levels.ERROR, {title = title})
     else
         local rf_msg = "RelatedFiles error:\n"..msg
         vim.api.nvim_echo({{rf_msg, "ErrorMsg"}}, true, {})
     end
 end
+
+
 
 -- TODO: remove, in Path now
 function M.file_exists(filename)

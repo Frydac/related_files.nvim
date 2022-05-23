@@ -2,8 +2,12 @@ local tprint = require('related_files.util').tprint
 local rf = require('related_files.related_files')
 local rf_info = require('related_files.info')
 local path = require('related_files.util.path')
+local print_error = require('related_files.util').print_error
+local print_warning = require('related_files.util').print_warning
 
 local M = {}
+M.info = rf_info
+-- M.file = require('related_files.file')
 
 M.pargen_from_expression = require('related_files.expression').pargen_from_expression
 
@@ -35,19 +39,39 @@ local function create_and_open_one_of(filenames)
     end
 end
 
+-- returns pargen and parsed intermediate_representation (inter_rep) for filename
+function M.get_pargen(filename)
+    local related_files_info = M.info.find_and_load_related_file_info(filename)
+    local matching_pargens = rf.find_all_matching_pargen_parsers(related_files_info.pargens, filename)
+    local matching_pargen = rf.choose_from_matching_pargens(matching_pargens, filename)
+    return matching_pargen
+end
+
+
+function M.get_related_file_info(filename)
+    -- find info
+    local fn_info = rf_info.find_related_file_infos(filename)
+    L("fn_info: ", fn_info)
+    if not fn_info or #fn_info == 0 then
+        print_error("Can't find a .related_file_info.lua in any parent dir of '"..filename.."'")
+        return nil
+    end
+    local related_files_info = rf_info.load_related_file_info(fn_info[1])
+    if not related_files_info then
+        print_error("Can't load info from '"..fn_info[1].."'")
+        return nil
+    end
+    return related_files_info
+end
+
 function M.open_or_create_related_file(from_filename, to_index)
     -- find info
-    local fn_info = rf_info.find_related_file_infos(from_filename)
-    assert(fn_info and #fn_info > 0, "Can't find a .related_file_info.lua in any parent dir of '"..from_filename.."'")
-    local related_files_info = rf_info.load_related_file_info(fn_info[1])
-    assert(related_files_info, "Can't load info from '"..fn_info[1].."'")
+    local related_files_info = M.info.find_and_load_related_file_info(from_filename)
+    if not related_files_info then return nil end
 
     -- find related candidates
     local fns_exist, fns_non_exist = rf.find_existing_related_candidates(from_filename, related_files_info, to_index)
-
-    if not fns_exist then
-        return nil
-    end
+    if not fns_exist then return nil end
 
     -- Decide which to open_or_create
     if #fns_exist == 1 then

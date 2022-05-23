@@ -1,5 +1,6 @@
 local util = require('related_files.util')
 local warning = util.print_warning
+local info = require('related_files.info')
 
 local M = {}
 
@@ -56,7 +57,7 @@ local function resolve_multiple_matching_pargens(matching_pargens)
 end
 
 -- Usually only one parser is correct, we choose one
-local function choose_from_matching_pargens(matching_pargens, filename)
+function M.choose_from_matching_pargens(matching_pargens, filename)
     if #matching_pargens == 0 then
         -- no parser works for the filename (TODO: add info about upcoming info interface)
         warning(string.format("No related files parsers match filename: '%s'", filename))
@@ -104,7 +105,7 @@ local function find_related_pargens(matching_pargen, related_files_info, relatio
 end
 
 -- NOTE: returns a list of pairs {pargen, inter_rep}
-local function find_all_matching_pargen_parsers(pargens, filename)
+function M.find_all_matching_pargen_parsers(pargens, filename)
     local matching_pargens = {}
     -- check all the parsers TODO: only use parsers for certain vim_filetype when defined
     for _, pargen in ipairs(pargens) do
@@ -129,8 +130,8 @@ end
 
 function M.find_related_candidates(filename, related_files_info, relations_index)
     -- find 1 pargen that can parse (i.e. the match)
-    local matching_pargens = find_all_matching_pargen_parsers(related_files_info.pargens, filename)
-    local matching_pargen = choose_from_matching_pargens(matching_pargens, filename)
+    local matching_pargens = M.find_all_matching_pargen_parsers(related_files_info.pargens, filename)
+    local matching_pargen = M.choose_from_matching_pargens(matching_pargens, filename)
     if not matching_pargen then
         return nil
     end
@@ -196,7 +197,6 @@ local log_table = {
 
 -- TODO: move to own file?
 function M.info_log(filename, nr_keymaps)
-    local info = require('related_files.info')
     local log_info = {}
 
     -- Gather all data
@@ -212,10 +212,10 @@ function M.info_log(filename, nr_keymaps)
         if related_file_info then
 
             -- parsers
-            local matching_pargens = find_all_matching_pargen_parsers(related_file_info.pargens, filename)
+            local matching_pargens = M.find_all_matching_pargen_parsers(related_file_info.pargens, filename)
             data.matching_pargens = matching_pargens
             if #matching_pargens == 0 then goto continue end
-            local pargen_chosen = choose_from_matching_pargens(matching_pargens, filename)
+            local pargen_chosen = M.choose_from_matching_pargens(matching_pargens, filename)
             -- L("pargen_chosen: ", pargen_chosen)
             local ir = pargen_chosen.pargen.parser(filename)
             data.matching_pargens = {}

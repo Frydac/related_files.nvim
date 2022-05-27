@@ -12,22 +12,27 @@ local function split_namespace(namespace)
         return result
 end
 
+-- Create a new File instance that checks if a related_files_info.lua and pargen
+-- exists for the filename, and parses the filename to get
+-- namespace/(class)name/parent dir.
 function File:new(filename)
     local obj = {}
     obj.path = filename
-    obj.info = rf.get_pargen(obj.path)
-    obj.name = obj.info.inter_rep.name
-    obj.namespace = obj.info.inter_rep.namespace
-    obj.namespaces = split_namespace(obj.namespace)
-    obj.parent = obj.info.inter_rep.parent
     obj.basename = vim.fn.fnamemodify(obj.path, ":t")
     obj.ext = vim.fn.fnamemodify(obj.path, ":e")
+    obj.info = rf.get_pargen(obj.path)
+    if obj.info then
+        obj.name = obj.info.inter_rep.name
+        obj.namespace = obj.info.inter_rep.namespace
+        obj.parent = obj.info.inter_rep.parent
+        obj.namespaces = split_namespace(obj.namespace)
+    end
     setmetatable(obj, self)
     self.__index = self
     return obj
 end
 
--- @param keyindex 
+-- @param keyindex
 --   Is the index in the relations table of the wanted related pargens as
 --   define in the .related_files_info.lua for the current filename
 function File:find_related_filenames(keyindex, only_existing_filenames)

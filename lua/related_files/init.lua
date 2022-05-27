@@ -15,7 +15,7 @@ local function create_and_open_one_of(filenames)
     if #filenames == 1 then
         local fn = filenames[1]
         vim.ui.input(
-            { prompt = "Related file '"..fn.."' doesn't exist, create? (y/esc): " },
+            { prompt = "Related file '"..fn.."' doesn't exist, create and open? (y/esc): " },
             function (input)
                 if input == "y" then
                     path.touch(fn)
@@ -27,7 +27,7 @@ local function create_and_open_one_of(filenames)
     elseif #filenames > 1 then
         vim.ui.select(
             filenames ,
-            { prompt = "No related file exists, create one of these candidates?" },
+            { prompt = "No related file exists, create and open one of these candidates?" },
             function(fn, _)
                 if fn then
                     path.touch(fn)
@@ -42,6 +42,7 @@ end
 -- returns pargen and parsed intermediate_representation (inter_rep) for filename
 function M.get_pargen(filename)
     local related_files_info = M.info.find_and_load_related_file_info(filename)
+    if not related_files_info then return nil end
     local matching_pargens = rf.find_all_matching_pargen_parsers(related_files_info.pargens, filename)
     local matching_pargen = rf.choose_from_matching_pargens(matching_pargens, filename)
     return matching_pargen

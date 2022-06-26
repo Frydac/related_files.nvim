@@ -4,12 +4,26 @@ local rf = require('related_files')
 local File = {
 }
 
+local function split_string(str, sep)
+    local result = {}
+    for part in string.gmatch(str, "([^" .. sep .. "]+)") do
+        table.insert(result, part)
+    end
+    return result
+end
+
 local function split_namespace(namespace)
-        local result={}
-        for dir in string.gmatch(namespace, "([^/]+)") do
-                table.insert(result, dir)
+    return split_string(namespace, "/")
+end
+
+local function array_to_table(ary)
+    local result = {}
+    if type(ary) == "table" then
+        for _, value in ipairs(ary) do
+            result[value] = true
         end
-        return result
+    end
+    return result
 end
 
 -- Create a new File instance that checks if a related_files_info.lua and pargen
@@ -26,6 +40,7 @@ function File:new(filename)
         obj.namespace = obj.info.inter_rep.namespace
         obj.parent = obj.info.inter_rep.parent
         obj.namespaces = split_namespace(obj.namespace)
+        obj.pargen_type = array_to_table(split_string(obj.info.pargen.name, "_")) -- this assumes a convention that the pargen name is split into parts with "_"
     end
     setmetatable(obj, self)
     self.__index = self

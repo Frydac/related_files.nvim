@@ -1,4 +1,3 @@
-local tprint = require('related_files.util').tprint
 local rf = require('related_files.related_files')
 local rf_info = require('related_files.info')
 local path = require('related_files.util.path')

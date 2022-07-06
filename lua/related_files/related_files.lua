@@ -109,9 +109,7 @@ function M.find_all_matching_pargen_parsers(pargens, filename)
     local matching_pargens = {}
     -- check all the parsers TODO: only use parsers for certain vim_filetype when defined
     for _, pargen in ipairs(pargens) do
-        -- L("pargen.name: ", pargen.name)
         local intermediate_representation = pargen.parser(filename)
-        -- L("intermediate_representation: ", intermediate_representation)
         if intermediate_representation then
             table.insert(matching_pargens, {inter_rep = intermediate_representation, pargen = pargen})
         end

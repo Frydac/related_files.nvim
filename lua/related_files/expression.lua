@@ -67,6 +67,10 @@ function M.pargen_from_expression(name, expression, vim_filetype)
 
     local pargen = {}
 
+    pargen.vim_filetype = vim_filetype
+    pargen.name = name
+    pargen.expression = expression
+
     pargen.parser = function (filename)
         -- print("pargen.name: "..pargen.name)
         -- print("filename: "..filename)
@@ -78,10 +82,6 @@ function M.pargen_from_expression(name, expression, vim_filetype)
             namespace = "",
             name = ""
         }
-
-        pargen.vim_filetype = vim_filetype
-        pargen.name = name
-        pargen.expression = expression
 
         -- Splitting up the parsing as the namespace can be empty and there are no optional capture groups.
         -- probably more efficient way to do this, but this seems to work
